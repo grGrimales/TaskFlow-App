@@ -1,0 +1,94 @@
+<!-- CÓDIGO PARA: src/app/auth/register/register.component.html -->
+
+<div class="gradient-background min-h-screen flex flex-col items-center justify-center p-4">
+  <div class="w-full max-w-md">
+
+    <!-- Logo y Título -->
+    <div class="text-center mb-6">
+      <h1 class="text-5xl font-extrabold text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+        TaskFlow
+      </h1>
+      <p class="text-slate-100 font-medium mt-1">Tu flujo de trabajo, reinventado.</p>
+    </div>
+
+    <!-- Tarjeta del Formulario -->
+    <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8">
+      
+      <h2 class="text-2xl font-bold text-gray-800 text-center mb-1">Crea tu cuenta</h2>
+      <p class="text-center text-gray-500 mb-6">Es rápido y fácil. ¡Únete a TaskFlow!</p>
+
+      <!-- Formulario Reactivo de Registro -->
+      <form [formGroup]="registerForm" (ngSubmit)="register()">
+        
+        <!-- MENSAJE DE ERROR DEL SERVIDOR -->
+        <div *ngIf="registerError" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative mb-4" role="alert">
+          <span class="block sm:inline">{{ registerError }}</span>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Campo de Nombre -->
+          <div>
+            <label for="register-name" class="text-sm font-medium text-gray-600">Nombre</label>
+            <input 
+              type="text" 
+              id="register-name" 
+              placeholder="Tu Nombre Completo"
+              formControlName="name"
+              class="mt-1 w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
+            
+            <!-- MENSAJES DE VALIDACIÓN DEL CLIENTE -->
+            <div *ngIf="name?.invalid && (name?.dirty || name?.touched)" class="text-red-600 text-sm mt-1">
+              <div *ngIf="name?.errors?.['required']">Tu nombre es requerido.</div>
+            </div>
+          </div>
+
+          <!-- Campo de Correo Electrónico -->
+          <div>
+            <label for="register-email" class="text-sm font-medium text-gray-600">Correo Electrónico</label>
+            <input 
+              type="email" 
+              id="register-email" 
+              placeholder="tu@email.com"
+              formControlName="email"
+              class="mt-1 w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
+            
+            <!-- MENSAJES DE VALIDACIÓN DEL CLIENTE -->
+            <div *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="text-red-600 text-sm mt-1">
+              <div *ngIf="email?.errors?.['required']">El correo es requerido.</div>
+              <div *ngIf="email?.errors?.['email']">Por favor, ingresa un correo válido.</div>
+            </div>
+          </div>
+
+          <!-- Campo de Contraseña -->
+          <div>
+            <label for="register-password" class="text-sm font-medium text-gray-600">Contraseña</label>
+            <input 
+              type="password" 
+              id="register-password" 
+              placeholder="Crea una contraseña segura"
+              formControlName="password"
+              class="mt-1 w-full p-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition">
+            
+            <!-- MENSAJES DE VALIDACIÓN DEL CLIENTE -->
+            <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="text-red-600 text-sm mt-1">
+              <div *ngIf="password?.errors?.['required']">La contraseña es requerida.</div>
+              <div *ngIf="password?.errors?.['minlength']">La contraseña debe tener al menos 8 caracteres.</div>
+            </div>
+          </div>
+        </div>
+        
+        <button 
+          type="submit" 
+          [disabled]="registerForm.invalid"
+          class="w-full mt-6 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg shadow-lg transition transform hover:scale-105 disabled:bg-purple-300 disabled:cursor-not-allowed">
+          Crear Cuenta
+        </button>
+      </form>
+
+      <p class="text-center text-sm text-gray-600 mt-6">
+        ¿Ya tienes una cuenta? 
+        <a routerLink="/login" class="font-bold text-purple-600 hover:underline">Inicia sesión</a>
+      </p>
+    </div>
+  </div>
+</div>

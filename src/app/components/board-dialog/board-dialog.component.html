@@ -1,0 +1,23 @@
+<!-- src/app/components/board-dialog/board-dialog.component.html -->
+<div class="p-6">
+  <h1 class="text-2xl font-bold mb-4">{{ isEditMode ? 'Editar Tablero' : 'Crear Nuevo Tablero' }}</h1>
+  <form [formGroup]="form" (ngSubmit)="onSave()">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Nombre del tablero</mat-label>
+      <input matInput formControlName="name" required>
+      <mat-error *ngIf="form.get('name')?.hasError('required')">El nombre es requerido.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full mt-4">
+      <mat-label>Descripción (Opcional)</mat-label>
+      <textarea matInput formControlName="description" rows="4"></textarea>
+    </mat-form-field>
+
+    <div class="flex justify-end space-x-4 mt-6">
+      <button mat-stroked-button type="button" (click)="onCancel()">Cancelar</button>
+      <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
+        {{ isEditMode ? 'Guardar Cambios' : 'Crear' }}
+      </button>
+    </div>
+  </form>
+</div>
