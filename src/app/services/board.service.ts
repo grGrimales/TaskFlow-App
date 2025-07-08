@@ -36,8 +36,12 @@ export class BoardService {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`);
   }
 
-  // --- MÉTODO NUEVO ---
   updateColumnOrder(boardId: string, columnIds: string[]): Observable<Board> {
     return this.http.patch<Board>(`${this.apiUrl}/${boardId}/column-order`, { columnIds });
+
+  }
+
+  addMember(boardId: string, email: string): Observable<Board> {
+    return this.http.post<Board>(`${this.apiUrl}/${boardId}/members`, { email });
   }
 }

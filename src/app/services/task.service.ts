@@ -37,5 +37,8 @@ export class TaskService {
     const moveData = { sourceColumnId, sourceTaskIds, destinationColumnId, destinationTaskIds };
     return this.http.patch<void>(`${this.apiUrl}/tasks/${taskId}/move`, moveData);
   }
-  // --------------------
+  
+  assignUsers(taskId: string, userIds: string[]): Observable<Task> {
+    return this.http.patch<Task>(`${this.apiUrl}/tasks/${taskId}/assign`, { userIds });
+  }
 }

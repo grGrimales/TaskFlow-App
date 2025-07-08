@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { MatDialog } from '@angular/material/dialog';
+
 
 import { BoardService } from '../../services/board.service';
 import { ColumnService } from '../../services/column.service';
@@ -11,11 +13,12 @@ import { TaskService } from '../../services/task.service';
 import { Board } from '../../models/board.model';
 import { Column } from '../../models/column.model';
 import { Task } from '../../models/task.model';
+import { TaskDialogComponent } from '../../components/task-dialog/task-dialog.component';
 
 @Component({
   selector: 'app-board-view',
   standalone: true,
-  imports: [ CommonModule, RouterLink, FormsModule, DragDropModule ],
+  imports: [CommonModule, RouterLink, FormsModule, DragDropModule],
   templateUrl: './board-view.component.html',
 })
 export class BoardViewComponent implements OnInit {
@@ -30,8 +33,10 @@ export class BoardViewComponent implements OnInit {
     private route: ActivatedRoute,
     private boardService: BoardService,
     private columnService: ColumnService,
-    private taskService: TaskService
-  ) {}
+    private taskService: TaskService,
+    
+    public dialog: MatDialog 
+  ) { }
 
   get columnIds(): string[] {
     return this.columns.map(column => column._id);
@@ -134,9 +139,37 @@ export class BoardViewComponent implements OnInit {
   }
 
   updateTask(task: Task) {
-    const newTitle = prompt('Nuevo título:', task.title);
-    if (newTitle && newTitle.trim() !== '' && newTitle !== task.title) {
-      this.taskService.updateTask(task._id, { title: newTitle }).subscribe(() => this.loadColumns());
+    if (!this.board) return;
+
+    const dialogRef = this.dialog.open(TaskDialogComponent, {
+      width: '600px',
+      data: { task, board: this.board }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Primero, actualizamos el título y la descripción
+        this.taskService.updateTask(task._id, result.taskData).subscribe(() => {
+          // Luego, asignamos los usuarios
+          this.taskService.assignUsers(task._id, result.assignedUserIds).subscribe(() => {
+            this.loadColumns(); // Recargar todo para ver los cambios
+          });
+        });
+      }
+    });
+  }
+
+  // --- MÉTODO NUEVO ---
+  inviteMember() {
+    const email = prompt('Introduce el correo electrónico del usuario a invitar:');
+    if (email) {
+      this.boardService.addMember(this.boardId, email).subscribe({
+        next: () => {
+          alert('Usuario invitado exitosamente.');
+          this.loadBoardDetails(); // Recargar los detalles del tablero para obtener la nueva lista de miembros
+        },
+        error: (err) => alert(`Error al invitar: ${err.error.message}`)
+      });
     }
   }
 }

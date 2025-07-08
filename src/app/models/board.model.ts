@@ -1,4 +1,5 @@
-// src/app/models/board.model.ts
+import { User } from "./user.model";
+
 export interface Board {
   _id: string;
   name: string;
@@ -6,4 +7,5 @@ export interface Board {
   owner: string;
   createdAt: string;
   updatedAt: string;
+  members: User[];
 }
