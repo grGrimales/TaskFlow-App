@@ -1,0 +1,21 @@
+<mat-form-field class="w-full">
+  <mat-label>Asignar a:</mat-label>
+  <mat-select [formControl]="userSelectControl" multiple (selectionChange)="onSelectionChange($event.value)">
+    <div class="px-3 py-2">
+      <input 
+        #searchInput 
+        matInput 
+        type="text" 
+        [formControl]="searchControl" 
+        placeholder="Buscar miembro..." 
+        class="w-full focus:outline-none border-b"
+        (keydown)="$event.stopPropagation()">
+    </div>
+    <mat-option *ngFor="let member of filteredMembers" [value]="member._id">
+      {{ member.name }}
+    </mat-option>
+    <mat-option *ngIf="filteredMembers.length === 0 && searchInput.value" disabled>
+      <span class="text-gray-500">No se encontraron usuarios</span>
+    </mat-option>
+  </mat-select>
+</mat-form-field>

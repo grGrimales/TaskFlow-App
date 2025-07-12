@@ -43,18 +43,23 @@ export class LoginComponent {
 
   // Esta función se llamará al enviar el formulario
   login() {
- if (this.loginForm.invalid) {
+
+    console.log('Formulario enviado:', this.loginForm.value);
+    if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+      console.error('Formulario inválido:', this.loginForm.errors);
       return;
     }
     this.loginError = null; // Limpiar errores previos
 
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
+        console.log('Login exitoso');
         // Navegar al dashboard correspondiente según el rol
         if (this.authService.hasRole('admin')) {
           this.router.navigate(['/admin/dashboard']);
         } else {
+          console.log('Usuario autenticado, redirigiendo al dashboard');
           this.router.navigate(['/dashboard']);
         }
       },

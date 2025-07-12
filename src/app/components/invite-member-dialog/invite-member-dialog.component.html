@@ -1,0 +1,35 @@
+<h1 mat-dialog-title>Invitar Miembros</h1>
+
+<div mat-dialog-content>
+  <mat-form-field class="w-full">
+    <mat-label>Buscar por nombre o email</mat-label>
+    <input matInput [formControl]="searchControl" placeholder="Escribe para buscar...">
+  </mat-form-field>
+  
+  <div class="mt-4 border rounded-md min-h-[200px] relative">
+    <div *ngIf="isLoading" class="absolute inset-0 flex items-center justify-center bg-white/60 z-10">
+      <mat-spinner diameter="30"></mat-spinner>
+    </div>
+    
+    <mat-list>
+      <ng-container *ngIf="users$ | async as users">
+        <p *ngIf="!isLoading && users.length === 0" class="text-center p-4 text-gray-500">
+          No se encontraron usuarios.
+        </p>
+        <mat-list-item *ngFor="let user of users" (click)="toggleSelection(user)" class="cursor-pointer">
+          <mat-checkbox [checked]="selectedUsers.has(user.email)" class="mr-4"></mat-checkbox>
+          <span>{{ user.name }} ({{ user.email }})</span>
+        </mat-list-item>
+      </ng-container>
+    </mat-list>
+  </div>
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCancelClick()">Cancelar</button>
+  <button mat-flat-button color="primary" 
+          [disabled]="selectedUsers.size === 0"
+          (click)="onInviteClick()">
+    Invitar ({{ selectedUsers.size }})
+  </button>
+</div>

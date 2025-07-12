@@ -44,4 +44,11 @@ export class BoardService {
   addMember(boardId: string, email: string): Observable<Board> {
     return this.http.post<Board>(`${this.apiUrl}/${boardId}/members`, { email });
   }
+
+    addMembers(boardId: string, emails: string[]): Observable<Board> {
+    const url = `${this.apiUrl}/${boardId}/members`;
+    // El cuerpo de la petición debe coincidir con tu AddMembersDto del backend
+    const body = { emails }; 
+    return this.http.post<Board>(url, body);
+  }
 }

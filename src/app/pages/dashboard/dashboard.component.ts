@@ -31,6 +31,7 @@ export class DashboardComponent implements OnInit {
 
   loadBoards(): void {
     this.boardService.getBoards().subscribe(boards => {
+      console.log('Boards loaded:', boards);
       this.boards = boards;
     });
   }
