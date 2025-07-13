@@ -1,33 +1,115 @@
-<div class="p-6">
-  <h1 class="text-2xl font-bold mb-4">
-    {{ isEditMode ? 'Editar Tarea' : 'Crear Nueva Tarea' }}
-  </h1>
-  
-  <form [formGroup]="form" (ngSubmit)="onSave()">
+<h1 mat-dialog-title class="text-2xl font-bold px-6 pb-4">
+  {{ isEditMode ? 'Editar Tarea' : 'Crear Nueva Tarea' }}
+</h1>
+
+<div mat-dialog-content class="px-6">
+  <form [formGroup]="form">
     <mat-form-field appearance="outline" class="w-full">
       <mat-label>Título de la Tarea</mat-label>
       <input matInput formControlName="title" required>
     </mat-form-field>
 
+    <div class="grid grid-cols-2 gap-4 mt-4">
+      <mat-form-field appearance="outline">
+        <mat-label>Fecha de Vencimiento</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="dueDate">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Prioridad</mat-label>
+        <mat-select formControlName="priority">
+          <mat-option *ngFor="let priority of priorities" [value]="priority">
+            {{ priority }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
     <mat-form-field appearance="outline" class="w-full mt-4">
       <mat-label>Descripción</mat-label>
-      <textarea matInput formControlName="description" rows="4"></textarea>
+      <textarea matInput formControlName="description" rows="3"></textarea>
     </mat-form-field>
 
-    <div class="mt-4">
+    <div class="mt-6">
+      <h3 class="text-lg font-medium text-gray-700 mb-2">Etiquetas</h3>
+<mat-form-field appearance="outline" class="w-full">
+  <mat-label>Seleccionar etiquetas</mat-label>
+  <mat-select formControlName="labels" multiple>
+    <mat-select-trigger>
+      <mat-chip-listbox>
+        <mat-chip *ngFor="let labelId of form.value.labels"
+                  [style.background-color]="getLabelById(labelId)?.color"
+                  (removed)="removeLabel(labelId)"
+                  class="!text-white">
+          {{ getLabelById(labelId)?.name }}
+          <button matChipRemove>
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </mat-chip>
+      </mat-chip-listbox>
+    </mat-select-trigger>
+    <mat-option *ngFor="let label of boardLabels" [value]="label._id">
+      <span class="inline-block w-4 h-4 rounded-full mr-2" [style.background-color]="label.color"></span>
+      {{ label.name }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+    </div>
+
+    <div class="mt-6">
       <h3 class="text-lg font-medium text-gray-700 mb-2">Asignar a:</h3>
-      <mat-selection-list #userList (selectionChange)="onSelectionChange(userList.selectedOptions.selected)">
+      <mat-selection-list 
+        #userList 
+        (selectionChange)="onSelectionChange(userList.selectedOptions.selected)"
+        class="max-h-40 overflow-y-auto border rounded-md">
         <mat-list-option *ngFor="let member of boardMembers" [value]="member._id" [selected]="selectedUserIds.includes(member._id)">
           {{ member.name }} ({{ member.email }})
         </mat-list-option>
       </mat-selection-list>
     </div>
-
-    <div class="flex justify-end space-x-4 mt-6">
-      <button mat-stroked-button type="button" (click)="onCancel()">Cancelar</button>
-      <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid">
-        {{ isEditMode ? 'Guardar Cambios' : 'Crear Tarea' }}
-      </button>
-    </div>
   </form>
+
+  <div *ngIf="isEditMode" class="mt-6 border-t pt-6">
+    <h3 class="text-xl font-bold mb-4">Comentarios 💬</h3>
+    
+    <div class="space-y-4 max-h-60 overflow-y-auto pr-2 mb-6">
+      <div *ngFor="let comment of (comments$ | async)">
+        <div class="flex items-start space-x-3">
+          <div class="flex-shrink-0 h-8 w-8 bg-gray-600 rounded-full flex items-center justify-center text-white text-sm font-bold border-2 border-white" [title]="comment.author.name">
+            {{ comment.author.name.charAt(0) | uppercase }}
+          </div>
+          <div class="flex-1 bg-gray-100 rounded-lg px-3 py-2">
+            <p class="font-semibold text-gray-800 text-sm">{{ comment.author.name }}</p>
+            <p class="text-gray-700 text-sm">{{ comment.text }}</p>
+          </div>
+           <p class="text-xs text-gray-400 font-normal self-center">{{ comment.createdAt | date:'short' }}</p>
+        </div>
+      </div>
+      <div *ngIf="(comments$ | async)?.length === 0" class="text-center text-gray-500 py-4">
+        Aún no hay comentarios. ¡Sé el primero en añadir uno!
+      </div>
+    </div>
+  
+    <div>
+      <h4 class="text-lg font-medium text-gray-700 mb-2">Añadir un comentario:</h4>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Escribe tu comentario aquí...</mat-label>
+        <textarea matInput [formControl]="newCommentControl" rows="3"></textarea>
+      </mat-form-field>
+      <div class="flex justify-end">
+        <button mat-flat-button color="primary" [disabled]="newCommentControl.invalid" (click)="onAddComment()">
+          Comentar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div mat-dialog-actions align="end" class="pt-4">
+  <button mat-stroked-button (click)="onCancel()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="onSave()" [disabled]="form.invalid">
+    {{ isEditMode ? 'Guardar Cambios' : 'Crear Tarea' }}
+  </button>
 </div>

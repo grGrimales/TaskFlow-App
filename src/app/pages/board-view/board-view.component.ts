@@ -63,7 +63,25 @@ export class BoardViewComponent implements OnInit {
   }
 
   loadColumns() {
-    this.columnService.getColumnsForBoard(this.boardId).subscribe(cols => this.columns = cols);
+    this.columnService.getColumnsForBoard(this.boardId).subscribe({
+      next: (columns) => {
+        // --- ¡AÑADE ESTA LÍNEA CLAVE AQUÍ! ---
+ columns.forEach(column => {
+        column.tasks.forEach(task => {
+          // Si la tarea tiene un array de etiquetas, filtramos para quitar cualquier valor 'null'.
+          if (task.labels) {
+            task.labels = task.labels.filter(label => label !== null);
+          }
+        });
+      });
+      
+      console.log('Datos recibidos y limpiados en loadColumns:', columns);
+      this.columns = columns;
+      },
+      error: (error) => {
+        console.error('Error al cargar las columnas:', error);
+      }
+    });
   }
 
   // --- MÉTODOS DE DRAG & DROP (sin cambios) ---
@@ -138,7 +156,7 @@ export class BoardViewComponent implements OnInit {
 
     const dialogRef = this.dialog.open(TaskDialogComponent, {
       width: '600px',
-      // No pasamos una 'task' para que el diálogo sepa que es modo de creación
+      maxHeight: '90vh', 
       data: { board: this.board }
     });
 
@@ -169,20 +187,33 @@ export class BoardViewComponent implements OnInit {
 
   updateTask(task: Task) {
     if (!this.board) return;
+    
     const dialogRef = this.dialog.open(TaskDialogComponent, {
       width: '600px',
+      maxHeight: '90vh',
       data: { task, board: this.board }
     });
+
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.taskService.updateTask(task._id, result.taskData).subscribe(() => {
-          this.taskService.assignUsers(task._id, result.assignedUserIds).subscribe(() => {
+        // --- SECCIÓN A CORREGIR ---
+        const { taskData, assignedUserIds } = result;
+
+        // 1. Actualizamos los datos principales de la tarea (título, desc, etiquetas, etc.)
+        this.taskService.updateTask(task._id, taskData).subscribe(() => {
+          
+          // 2. Después, si hubo cambios, actualizamos los usuarios asignados.
+          // (Esta lógica asume que siempre se envían los usuarios, incluso si no cambian)
+          this.taskService.assignUsers(task._id, assignedUserIds).subscribe(() => {
+            
+            // 3. Finalmente, recargamos todo para ver los cambios.
             this.loadColumns();
           });
         });
       }
     });
   }
+  
 
 
   inviteMember(): void {

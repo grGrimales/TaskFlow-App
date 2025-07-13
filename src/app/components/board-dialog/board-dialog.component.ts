@@ -39,6 +39,7 @@ export class BoardDialogComponent implements OnInit {
   ngOnInit(): void {}
 
   onSave(): void {
+    console.log('Form Value:', this.form.value);
     if (this.form.valid) {
       this.dialogRef.close(this.form.value);
     }
