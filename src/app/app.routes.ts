@@ -7,12 +7,12 @@ export const routes: Routes = [
   { 
     path: 'login', 
     loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent),
-    canActivate: [publicGuard] // 👈 2. Aplícalo aquí
+    canActivate: [publicGuard] 
   },
   { 
     path: 'register', 
     loadComponent: () => import('./auth/register/register.component').then(m => m.RegisterComponent),
-    canActivate: [publicGuard] // 👈 3. Y aquí también
+    canActivate: [publicGuard] 
   },
 
   { 

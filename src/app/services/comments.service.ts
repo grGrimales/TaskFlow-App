@@ -1,4 +1,3 @@
-// src-front/app/services/comments.service.ts
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';

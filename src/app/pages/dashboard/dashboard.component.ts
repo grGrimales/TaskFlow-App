@@ -1,10 +1,9 @@
-// src/app/pages/dashboard/dashboard.component.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BoardService } from '../../services/board.service';
 import { Board } from '../../models/board.model';
 import { AuthService } from '../../services/auth.service';
-import { Router, RouterLink } from '@angular/router'; // <-- 1. Importar RouterLink
+import { Router, RouterLink } from '@angular/router'; 
 import { MatDialog } from '@angular/material/dialog';
 import { BoardDialogComponent } from '../../components/board-dialog/board-dialog.component';
 
@@ -13,7 +12,7 @@ import { BoardDialogComponent } from '../../components/board-dialog/board-dialog
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink // <-- 2. Añadir RouterLink aquí
+    RouterLink 
   ],
   templateUrl: './dashboard.component.html',
 })
@@ -31,7 +30,6 @@ export class DashboardComponent implements OnInit {
 
   loadBoards(): void {
     this.boardService.getBoards().subscribe(boards => {
-      console.log('Boards loaded:', boards);
       this.boards = boards;
     });
   }

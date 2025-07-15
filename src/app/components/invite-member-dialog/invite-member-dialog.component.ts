@@ -28,7 +28,7 @@ export class InviteMemberDialogComponent implements OnInit {
   searchControl = new FormControl('');
   users$: Observable<User[]>;
   isLoading = false;
-  selectedUsers = new Map<string, User>(); // Usar un Map para IDs únicos
+  selectedUsers = new Map<string, User>(); 
 
   constructor(
     public dialogRef: MatDialogRef<InviteMemberDialogComponent>,
@@ -41,7 +41,7 @@ export class InviteMemberDialogComponent implements OnInit {
       distinctUntilChanged(),
       tap(() => this.isLoading = true),
       switchMap(term => this.userService.search(term || '').pipe(
-          catchError(() => of([])), // En caso de error, devolver array vacío
+          catchError(() => of([])), 
           tap(() => this.isLoading = false)
         )
       )

@@ -29,7 +29,6 @@ export class TaskService {
   // Actualizar una tarea
  updateTask(taskId: string, updates: { title?: string; description?: string; labels?: string[] }): Observable<Task> {
 
-  console.log('Updating task:', taskId, 'with updates:', updates);
     return this.http.patch<Task>(`${this.apiUrl}/tasks/${taskId}`, updates);
   }
   // Eliminar una tarea
@@ -50,5 +49,17 @@ export class TaskService {
   
   assignUsers(taskId: string, userIds: string[]): Observable<Task> {
     return this.http.patch<Task>(`${this.apiUrl}/tasks/${taskId}/assign`, { userIds });
+  }
+
+  addChecklistItem(taskId: string, title: string): Observable<Task> {
+    return this.http.post<Task>(`${this.apiUrl}/tasks/${taskId}/checklist`, { title });
+  }
+
+  updateChecklistItem(taskId: string, itemId: string, completed: boolean): Observable<Task> {
+    return this.http.patch<Task>(`${this.apiUrl}/tasks/${taskId}/checklist/${itemId}`, { completed });
+  }
+
+  removeChecklistItem(taskId: string, itemId: string): Observable<Task> {
+    return this.http.delete<Task>(`${this.apiUrl}/tasks/${taskId}/checklist/${itemId}`);
   }
 }

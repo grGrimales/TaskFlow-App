@@ -41,31 +41,25 @@ export class LoginComponent {
     return this.loginForm.get('password');
   }
 
-  // Esta función se llamará al enviar el formulario
   login() {
 
-    console.log('Formulario enviado:', this.loginForm.value);
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       console.error('Formulario inválido:', this.loginForm.errors);
       return;
     }
-    this.loginError = null; // Limpiar errores previos
+    this.loginError = null; 
 
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
-        console.log('Login exitoso');
-        // Navegar al dashboard correspondiente según el rol
         if (this.authService.hasRole('admin')) {
           this.router.navigate(['/admin/dashboard']);
         } else {
-          console.log('Usuario autenticado, redirigiendo al dashboard');
           this.router.navigate(['/dashboard']);
         }
       },
       error: (err) => {
         console.error('Error de login:', err);
-        // Aquí puedes poner un mensaje más amigable
         this.loginError = 'Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.';
       }
     });

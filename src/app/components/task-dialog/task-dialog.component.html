@@ -32,36 +32,71 @@
       <textarea matInput formControlName="description" rows="3"></textarea>
     </mat-form-field>
 
+    <div *ngIf="isEditMode" class="mt-6">
+        <h3 class="text-lg font-medium text-gray-700 mb-2">Checklist ✅</h3>
+
+        <div class="flex items-center mb-2" *ngIf="data.task.checklist && data.task.checklist.length > 0">
+          <span class="text-sm font-semibold mr-2">{{getChecklistProgress() | number:'1.0-0'}}%</span>
+          <mat-progress-bar
+            class="flex-grow"
+            mode="determinate"
+            [value]="getChecklistProgress()">
+          </mat-progress-bar>
+        </div>
+
+
+        <div class="space-y-1 max-h-40 overflow-y-auto pr-2">
+            <div *ngFor="let item of data.task.checklist" class="checklist-item flex items-center justify-between hover:bg-gray-100 rounded p-1">
+                <mat-checkbox
+                  class="flex-grow"
+                  [checked]="item.completed"
+                  (change)="onChecklistItemToggle(item)">
+                  <span [class.line-through]="item.completed" [class.text-gray-500]="item.completed">{{ item.title }}</span>
+                </mat-checkbox>
+                <button mat-icon-button (click)="onRemoveChecklistItem(item._id)" class="checklist-delete-btn">
+                  <mat-icon class="text-gray-400 hover:text-red-500 text-base">delete_outline</mat-icon>
+                </button>
+            </div>
+        </div>
+
+        <div class="add-item-form flex items-center gap-2 mt-2">
+            <mat-form-field appearance="outline" class="flex-grow !mb-0" subscriptSizing="dynamic">
+              <mat-label>Añadir un elemento...</mat-label>
+              <input matInput #checklistItemInput (keyup.enter)="onAddChecklistItem(checklistItemInput)">
+            </mat-form-field>
+            <button mat-flat-button color="primary" (click)="onAddChecklistItem(checklistItemInput)">Añadir</button>
+        </div>
+    </div>
     <div class="mt-6">
       <h3 class="text-lg font-medium text-gray-700 mb-2">Etiquetas</h3>
-<mat-form-field appearance="outline" class="w-full">
-  <mat-label>Seleccionar etiquetas</mat-label>
-  <mat-select formControlName="labels" multiple>
-    <mat-select-trigger>
-      <mat-chip-listbox>
-        <mat-chip *ngFor="let labelId of form.value.labels"
-                  [style.background-color]="getLabelById(labelId)?.color"
-                  (removed)="removeLabel(labelId)"
-                  class="!text-white">
-          {{ getLabelById(labelId)?.name }}
-          <button matChipRemove>
-            <mat-icon>cancel</mat-icon>
-          </button>
-        </mat-chip>
-      </mat-chip-listbox>
-    </mat-select-trigger>
-    <mat-option *ngFor="let label of boardLabels" [value]="label._id">
-      <span class="inline-block w-4 h-4 rounded-full mr-2" [style.background-color]="label.color"></span>
-      {{ label.name }}
-    </mat-option>
-  </mat-select>
-</mat-form-field>
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Seleccionar etiquetas</mat-label>
+        <mat-select formControlName="labels" multiple>
+          <mat-select-trigger>
+            <mat-chip-listbox>
+              <mat-chip *ngFor="let label of form.value.labels"
+                        [style.background-color]="getLabelFromObject(label)?.color"
+                        (removed)="removeLabel(label)"
+                        class="!text-white">
+                {{ getLabelFromObject(label)?.name }}
+                <button matChipRemove>
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip>
+            </mat-chip-listbox>
+          </mat-select-trigger>
+          <mat-option *ngFor="let label of boardLabels" [value]="label">
+            <span class="inline-block w-4 h-4 rounded-full mr-2" [style.background-color]="label.color"></span>
+            {{ label.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
 
     <div class="mt-6">
       <h3 class="text-lg font-medium text-gray-700 mb-2">Asignar a:</h3>
-      <mat-selection-list 
-        #userList 
+      <mat-selection-list
+        #userList
         (selectionChange)="onSelectionChange(userList.selectedOptions.selected)"
         class="max-h-40 overflow-y-auto border rounded-md">
         <mat-list-option *ngFor="let member of boardMembers" [value]="member._id" [selected]="selectedUserIds.includes(member._id)">
@@ -73,7 +108,7 @@
 
   <div *ngIf="isEditMode" class="mt-6 border-t pt-6">
     <h3 class="text-xl font-bold mb-4">Comentarios 💬</h3>
-    
+
     <div class="space-y-4 max-h-60 overflow-y-auto pr-2 mb-6">
       <div *ngFor="let comment of (comments$ | async)">
         <div class="flex items-start space-x-3">
@@ -84,14 +119,14 @@
             <p class="font-semibold text-gray-800 text-sm">{{ comment.author.name }}</p>
             <p class="text-gray-700 text-sm">{{ comment.text }}</p>
           </div>
-           <p class="text-xs text-gray-400 font-normal self-center">{{ comment.createdAt | date:'short' }}</p>
+            <p class="text-xs text-gray-400 font-normal self-center">{{ comment.createdAt | date:'short' }}</p>
         </div>
       </div>
       <div *ngIf="(comments$ | async)?.length === 0" class="text-center text-gray-500 py-4">
         Aún no hay comentarios. ¡Sé el primero en añadir uno!
       </div>
     </div>
-  
+
     <div>
       <h4 class="text-lg font-medium text-gray-700 mb-2">Añadir un comentario:</h4>
       <mat-form-field appearance="outline" class="w-full">
@@ -105,6 +140,8 @@
       </div>
     </div>
   </div>
+
+
 </div>
 
 <div mat-dialog-actions align="end" class="pt-4">

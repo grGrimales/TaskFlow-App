@@ -1,4 +1,3 @@
-// src/app/components/board-dialog/board-dialog.component.ts
 import { Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -39,7 +38,6 @@ export class BoardDialogComponent implements OnInit {
   ngOnInit(): void {}
 
   onSave(): void {
-    console.log('Form Value:', this.form.value);
     if (this.form.valid) {
       this.dialogRef.close(this.form.value);
     }

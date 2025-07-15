@@ -10,7 +10,6 @@ import { User } from '../models/user.model';
   providedIn: 'root'
 })
 export class UserService {
-  // La URL base de tu API, definida en el archivo de entorno
   private apiUrl = `${environment.apiUrl}/users`;
 
   constructor(private http: HttpClient) { }
@@ -21,7 +20,6 @@ export class UserService {
    * @returns Un Observable con un array de usuarios.
    */
   search(query: string): Observable<User[]> {
-    // Realiza una petición GET a -> http://localhost:3000/users/search?q=...
     return this.http.get<User[]>(`${this.apiUrl}/search`, {
       params: { q: query }
     });

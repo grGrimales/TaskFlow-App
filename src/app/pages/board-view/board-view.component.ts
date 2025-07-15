@@ -75,7 +75,6 @@ export class BoardViewComponent implements OnInit {
         });
       });
       
-      console.log('Datos recibidos y limpiados en loadColumns:', columns);
       this.columns = columns;
       },
       error: (error) => {
@@ -89,7 +88,6 @@ export class BoardViewComponent implements OnInit {
     moveItemInArray(this.columns, event.previousIndex, event.currentIndex);
     const columnIds = this.columns.map(column => column._id);
     this.boardService.updateColumnOrder(this.boardId, columnIds).subscribe({
-      next: () => console.log('Orden de columnas guardado.'),
       error: (err) => console.error('Error al guardar orden:', err)
     });
   }
@@ -122,7 +120,6 @@ export class BoardViewComponent implements OnInit {
       destinationColumnId,
       destinationTaskIds
     ).subscribe({
-      next: () => console.log('Movimiento de tarea guardado.'),
       error: (err) => {
         console.error('Error al mover la tarea:', err);
         this.loadColumns(); // Recargar para revertir el cambio visual en caso de error

@@ -14,7 +14,7 @@ export class TaskCardComponent {
   @Output() delete = new EventEmitter<string>();
 
   onDeleteClick(event: MouseEvent): void {
-    event.stopPropagation(); // Evita que se dispare el evento 'edit'
+    event.stopPropagation(); 
     this.delete.emit(this.task._id);
   }
 

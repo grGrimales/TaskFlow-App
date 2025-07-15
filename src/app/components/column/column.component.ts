@@ -21,7 +21,6 @@ export class ColumnComponent {
   @Output() addTask = new EventEmitter<string>();
   @Output() taskDropped = new EventEmitter<CdkDragDrop<Task[]>>();
   
-  // Eventos que se propagan desde task-card
   @Output() editTask = new EventEmitter<Task>();
   @Output() deleteTask = new EventEmitter<string>();
 

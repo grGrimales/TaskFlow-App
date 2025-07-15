@@ -1,4 +1,3 @@
-// src-front/app/models/comment.model.ts
 
 import { User } from './user.model';
 

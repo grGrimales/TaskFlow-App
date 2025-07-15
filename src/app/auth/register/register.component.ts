@@ -1,4 +1,3 @@
-// src/app/auth/register/register.component.ts
 
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
@@ -34,7 +33,6 @@ export class RegisterComponent {
     });
   }
 
-  // Getters para un acceso más fácil en la plantilla
   get name() {
     return this.registerForm.get('name');
   }
@@ -56,12 +54,11 @@ export class RegisterComponent {
 
     this.authService.register(this.registerForm.value).subscribe({
       next: () => {
-        // Después de un registro exitoso, se navega al dashboard principal
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         console.error('Error de registro:', err);
-        if (err.status === 409) { // 409 Conflict (email ya existe)
+        if (err.status === 409) { 
           this.registerError = 'Este correo electrónico ya está en uso.';
         } else {
           this.registerError = 'Ocurrió un error durante el registro.';
