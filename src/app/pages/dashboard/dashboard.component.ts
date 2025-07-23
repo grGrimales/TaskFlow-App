@@ -6,13 +6,15 @@ import { AuthService } from '../../services/auth.service';
 import { Router, RouterLink } from '@angular/router'; 
 import { MatDialog } from '@angular/material/dialog';
 import { BoardDialogComponent } from '../../components/board-dialog/board-dialog.component';
+import { HeaderComponent } from '../../components/header/header.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink 
+    RouterLink,
+    HeaderComponent
   ],
   templateUrl: './dashboard.component.html',
 })
@@ -24,10 +26,14 @@ export class DashboardComponent implements OnInit {
 
   boards: Board[] = [];
 
+
+
   ngOnInit(): void {
     this.loadBoards();
+    
   }
 
+  
   loadBoards(): void {
     this.boardService.getBoards().subscribe(boards => {
       this.boards = boards;
@@ -60,7 +66,8 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  logout(): void {
+  
+   handleLogout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
   }

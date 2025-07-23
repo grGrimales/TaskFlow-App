@@ -1,12 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, tap, of, BehaviorSubject, throwError, map, catchError } from 'rxjs';
-import { jwtDecode } from 'jwt-decode'; 
+import { jwtDecode } from 'jwt-decode';
 
-interface AuthResponse {
-  access_token: string;      
-  refresh_token?: string;
-}
+
 interface DecodedToken {
   sub: string;
   email: string;
@@ -15,27 +12,38 @@ interface DecodedToken {
   exp: number;
 }
 
+interface User {
+  name: string;
+}
+
+interface AuthResponse {
+  access_token: string;
+  refresh_token?: string;
+  user: User;
+  userName?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:3000/auth'; 
-   private userApiUrl = 'http://localhost:3000/users'; 
+  private apiUrl = 'http://localhost:3000/auth';
+  private userApiUrl = 'http://localhost:3000/users';
 
-private authStatus = new BehaviorSubject<boolean>(this.hasToken());
+  private authStatus = new BehaviorSubject<boolean>(this.hasToken());
 
 
   register(userData: any): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/signup`, userData).pipe(
 
-      tap(response => this.setSession({ access_token: response.access_token, refresh_token: response.refresh_token })),
+      tap(response => this.setSession(response)),
     );
   }
 
   login(credentials: any): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/signin`, credentials).pipe(
-      tap(response => this.setSession(response)), 
+      tap(response => this.setSession(response)),
     );
   }
 
@@ -44,20 +52,37 @@ private authStatus = new BehaviorSubject<boolean>(this.hasToken());
     if (authResult.refresh_token) {
       localStorage.setItem('refresh_token', authResult.refresh_token);
     }
-    this.authStatus.next(true); 
+    if (authResult.userName) {
+     const user = { name: authResult.userName };
+    localStorage.setItem('currentUser', JSON.stringify(user));
+    }
+    this.authStatus.next(true);
   }
 
- logout(): void {
+  logout(): void {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
-    this.authStatus.next(false); 
+    localStorage.removeItem('currentUser');
+    this.authStatus.next(false);
+  }
+
+
+  getCurrentUser(): User | null {
+    const userString = localStorage.getItem('currentUser');
+    if (!userString) return null;
+    try {
+      return JSON.parse(userString);
+    } catch (e) {
+      console.error('Error parsing user data from localStorage', e);
+      return null;
+    }
   }
 
   isAuthenticated(): Observable<boolean> {
     return this.authStatus.asObservable();
   }
 
-getRefreshToken() {
+  getRefreshToken() {
     return localStorage.getItem('refresh_token');
   }
 
@@ -69,13 +94,13 @@ getRefreshToken() {
     if (!token) return null;
     try {
       const decoded: any = jwtDecode(token);
-      return decoded.sub; 
+      return decoded.sub;
     } catch (error) {
       console.error('Error decodificando el token:', error);
       return null;
     }
   }
-    refreshToken(): Observable<any> {
+  refreshToken(): Observable<any> {
     const refreshToken = this.getRefreshToken();
     const userId = this.getUserIdFromToken();
 
@@ -85,15 +110,15 @@ getRefreshToken() {
 
     return this.http.post(`${this.apiUrl}/refresh`, { userId, refreshToken }).pipe(
       tap((response: any) => {
-        this.setSession(response); 
+        this.setSession(response);
       })
     );
   }
- private hasToken(): boolean {
+  private hasToken(): boolean {
     return !!localStorage.getItem('access_token');
   }
 
-    getUserRoles(): string[] | null {
+  getUserRoles(): string[] | null {
     const token = localStorage.getItem('access_token');
     if (!token) return null;
     try {
@@ -105,7 +130,7 @@ getRefreshToken() {
     }
   }
 
-hasRole(role: string): boolean {
+  hasRole(role: string): boolean {
     const roles = this.getUserRoles();
     return roles ? roles.includes(role) : false;
   }
